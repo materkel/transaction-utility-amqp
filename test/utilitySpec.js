@@ -45,7 +45,9 @@ describe('Transaction Utility', () => {
       done();
     })
     // listen for transaction outcome with id 'transaction2' on listener 'api2'
-    .then(res => transactionUtility.listen('api2', transactionId))
+    .then(res => {
+      transactionUtility.listen('api2', transactionId);
+    })
     .then(res => transactionUtility.rollback(transactionId));
   });
 

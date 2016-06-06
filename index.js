@@ -14,11 +14,9 @@ module.exports = function () {
 
   function sendMessage(id, action) {
     return open.then(function (conn) {
-      var ok = conn.createChannel();
-      ok = ok.then(function (ch) {
-        ch.publish(exchange, id, new Buffer(JSON.stringify({ id: id, action: action })));
-      });
-      return ok;
+      return conn.createChannel();
+    }).then(function (ch) {
+      ch.publish(exchange, id, new Buffer(JSON.stringify({ id: id, action: action })));
     });
   }
 
@@ -37,20 +35,20 @@ module.exports = function () {
 
     listener: function listener(service, cb) {
       return open.then(function (conn) {
-        conn.createChannel().then(function (ch) {
-          ch.assertExchange(exchange, 'direct', { durable: true });
-          ch.assertQueue(service, { durable: true }).then(function (q) {
-            ch.consume(service, cb, { noAck: true });
-          });
+        return conn.createChannel();
+      }).then(function (ch) {
+        ch.assertExchange(exchange, 'direct', { durable: true });
+        return ch.assertQueue(service, { durable: true }).then(function (q) {
+          return ch.consume(service, cb, { noAck: true });
         });
       });
     },
 
     listen: function listen(service, transactionId) {
       return open.then(function (conn) {
-        conn.createChannel().then(function (ch) {
-          ch.bindQueue(service, exchange, transactionId);
-        });
+        return conn.createChannel();
+      }).then(function (ch) {
+        return ch.bindQueue(service, exchange, transactionId);
       });
     }
   };

@@ -7,12 +7,9 @@ module.exports = ({ url: url = 'amqp://localhost' } = {}) => {
 
   function sendMessage(id, action) {
     return open
-      .then(conn => {
-        let ok = conn.createChannel()
-        ok = ok.then(ch => {
-          ch.publish(exchange, id, new Buffer(JSON.stringify({ id, action })));
-        });
-        return ok;
+      .then(conn => conn.createChannel())
+      .then(ch => {
+        ch.publish(exchange, id, new Buffer(JSON.stringify({ id, action })));
       });
   }
 
@@ -29,27 +26,18 @@ module.exports = ({ url: url = 'amqp://localhost' } = {}) => {
 
     listener: (service, cb) => {
       return open
-        .then(conn => {
-            conn
-              .createChannel()
-              .then(ch => {
-                ch.assertExchange(exchange, 'direct', {durable: true});
-                ch.assertQueue(service, {durable: true}).then(q => {
-                  ch.consume(service, cb, { noAck: true });
-                });
-              });
+        .then(conn => conn.createChannel())
+        .then(ch => {
+          ch.assertExchange(exchange, 'direct', {durable: true});
+          return ch.assertQueue(service, {durable: true})
+            .then(q => ch.consume(service, cb, { noAck: true }));
         });
     },
 
     listen: (service, transactionId) => {
       return open
-        .then(conn => {
-          conn
-            .createChannel()
-            .then(ch => {
-              ch.bindQueue(service, exchange, transactionId);
-            });
-        });
+        .then(conn => conn.createChannel())
+        .then(ch => ch.bindQueue(service, exchange, transactionId));
     }
   }
 };
