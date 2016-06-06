@@ -3,11 +3,9 @@
 const chai = require('chai');
 const amqp = require('amqplib');
 const expect = chai.expect;
-const config = {
-  url: 'amqp://guest:guest@localhost:5672'
-};
+
 const transactionUtilityLib = require('../index');
-const transactionUtility = transactionUtilityLib(config)
+const transactionUtility = transactionUtilityLib()
 
 describe('Transaction Utility', () => {
   it('should generate a transaction id', () => {
