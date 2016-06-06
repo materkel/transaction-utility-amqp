@@ -10,7 +10,6 @@ module.exports = ({ url: url = 'amqp://localhost' } = {}) => {
       .then(conn => {
         let ok = conn.createChannel()
         ok = ok.then(ch => {
-          ch.assertExchange(exchange, 'direct', {durable: false});
           ch.publish(exchange, id, new Buffer(JSON.stringify({ id, action })));
         });
         return ok;
@@ -34,8 +33,8 @@ module.exports = ({ url: url = 'amqp://localhost' } = {}) => {
             conn
               .createChannel()
               .then(ch => {
-                ch.assertExchange(exchange, 'direct', {durable: false});
-                ch.assertQueue(service).then(q => {
+                ch.assertExchange(exchange, 'direct', {durable: true});
+                ch.assertQueue(service, {durable: true}).then(q => {
                   ch.consume(service, cb, { noAck: true });
                 });
               });

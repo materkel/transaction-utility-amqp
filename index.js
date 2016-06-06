@@ -16,7 +16,6 @@ module.exports = function () {
     return open.then(function (conn) {
       var ok = conn.createChannel();
       ok = ok.then(function (ch) {
-        ch.assertExchange(exchange, 'direct', { durable: false });
         ch.publish(exchange, id, new Buffer(JSON.stringify({ id: id, action: action })));
       });
       return ok;
@@ -39,8 +38,8 @@ module.exports = function () {
     listener: function listener(service, cb) {
       return open.then(function (conn) {
         conn.createChannel().then(function (ch) {
-          ch.assertExchange(exchange, 'direct', { durable: false });
-          ch.assertQueue(service).then(function (q) {
+          ch.assertExchange(exchange, 'direct', { durable: true });
+          ch.assertQueue(service, { durable: true }).then(function (q) {
             ch.consume(service, cb, { noAck: true });
           });
         });
