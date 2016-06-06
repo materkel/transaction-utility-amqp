@@ -3,7 +3,9 @@
 const chai = require('chai');
 const amqp = require('amqplib');
 const expect = chai.expect;
-
+const config = {
+  url: 'amqp://localhost'
+};
 const transactionUtilityLib = require('../index');
 const transactionUtility = transactionUtilityLib()
 
