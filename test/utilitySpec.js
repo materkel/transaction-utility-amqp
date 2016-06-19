@@ -42,9 +42,9 @@ describe('Transaction Utility', () => {
     transactionUtility.listener('api2', (res) => {
       res = JSON.parse(res.content.toString());
       expect(res.id).to.be.defined;
-      expect(res.msg).to.be.defined;
+      expect(res.action).to.be.defined;
       expect(res.id).to.be.equal(transactionId);
-      expect(res.msg).to.be.equal('r');
+      expect(res.action).to.be.equal('r');
       done();
     })
     // listen for transaction outcome with id 'transaction2' on listener 'api2'
@@ -59,9 +59,9 @@ describe('Transaction Utility', () => {
     transactionUtility.listener('api3', (res) => {
       res = JSON.parse(res.content.toString());
       expect(res.id).to.be.defined;
-      expect(res.msg).to.be.defined;
+      expect(res.action).to.be.defined;
       expect(res.id).to.be.equal(transactionId);
-      expect(res.msg).to.be.equal('c');
+      expect(res.action).to.be.equal('c');
       done();
     })
     // listen for transaction outcome with id 'transaction3' on listener 'api3'

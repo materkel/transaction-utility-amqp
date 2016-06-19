@@ -17,10 +17,10 @@ module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transac
    * @param  {string} msg - the message which will be delivered to the listeners
    * @return {Promise}
    */
-  function send(id, msg) {
+  function send(id, action) {
     return open
       .then(conn => conn.createChannel())
-      .then(ch => ch.publish(exchange, id, new Buffer(JSON.stringify({ id, msg }))));
+      .then(ch => ch.publish(exchange, id, new Buffer(JSON.stringify({ id, action }))));
   }
 
   /**

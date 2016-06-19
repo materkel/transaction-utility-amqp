@@ -26,11 +26,11 @@ module.exports = function () {
    * @param  {string} msg - the message which will be delivered to the listeners
    * @return {Promise}
    */
-  function send(id, msg) {
+  function send(id, action) {
     return open.then(function (conn) {
       return conn.createChannel();
     }).then(function (ch) {
-      return ch.publish(exchange, id, new Buffer(JSON.stringify({ id: id, msg: msg })));
+      return ch.publish(exchange, id, new Buffer(JSON.stringify({ id: id, action: action })));
     });
   }
 
