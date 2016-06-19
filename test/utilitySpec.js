@@ -18,17 +18,20 @@ describe('Transaction Utility', () => {
 
   it('should create a transaction listener', done => {
     // Set up listener
-    transactionUtility.listener('api1', (res) => {});
-    // Check if listener exists
-    amqp
-      .connect(config.url)
-      .then(conn => {
-        conn
-          .createChannel()
-          .then(ch => {
-            ch.checkQueue('api1')
-              .then(res => {
-                done();
+    transactionUtility
+      .listener('api1', (res) => {})
+      .then(() => {
+        // Check if listener exists
+        amqp
+          .connect(config.url)
+          .then(conn => {
+            conn
+              .createChannel()
+              .then(ch => {
+                ch.checkQueue('api1')
+                  .then(res => {
+                    done();
+                  });
               });
           });
       });
