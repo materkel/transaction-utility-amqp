@@ -4,11 +4,11 @@ const amqp = require('amqplib');
 /**
  * TransactionUtility Factory
  * @param  {Object} config
- * @param  {string} config.url - amqp connection url
- * @param  {string} config.exchange - name of the exchange the messages will be sent to
+ * @param  {string} [config.url = 'amqp://localhost'] - amqp connection url
+ * @param  {string} [config.exchange = 'transactions'] - name of the exchange the messages will be sent to
  * @return {Object}
  */
-module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transactions' }) => {
+module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transactions' } = {}) => {
   const open = amqp.connect(url);
 
   /**
