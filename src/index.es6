@@ -1,5 +1,6 @@
 const uuid = require('uuid');
 const amqp = require('amqplib');
+const retry = require('amqplib-retry');
 
 /**
  * TransactionUtility Factory
@@ -8,8 +9,9 @@ const amqp = require('amqplib');
  * @param  {string} [config.exchange = 'transactions'] - name of the exchange the messages will be sent to
  * @return {Object}
  */
-module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transactions' } = {}) => {
+module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transactions', ack: ack = false } = {}) => {
   const open = amqp.connect(url);
+  const noAck = !ack;
 
   /**
    * Send a message to all listeners for a specific id
@@ -56,9 +58,9 @@ module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transac
     return open
       .then(conn => conn.createChannel())
       .then(ch => {
-        ch.assertExchange(exchange, 'direct', {durable: true});
-        return ch.assertQueue(queueName, {durable: true})
-          .then(q => ch.consume(queueName, fn, { noAck: true }));
+        ch.assertExchange(exchange, 'direct', { durable: true });
+        return ch.assertQueue(queueName, { durable: true })
+          .then(q => ch.consume(queueName, fn, { noAck }));
       });
   }
 

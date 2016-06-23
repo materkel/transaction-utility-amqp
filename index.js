@@ -2,6 +2,7 @@
 
 var uuid = require('uuid');
 var amqp = require('amqplib');
+var retry = require('amqplib-retry');
 
 /**
  * TransactionUtility Factory
@@ -17,8 +18,11 @@ module.exports = function () {
   var url = _ref$url === undefined ? 'amqp://localhost' : _ref$url;
   var _ref$exchange = _ref.exchange;
   var exchange = _ref$exchange === undefined ? 'transactions' : _ref$exchange;
+  var _ref$ack = _ref.ack;
+  var ack = _ref$ack === undefined ? false : _ref$ack;
 
   var open = amqp.connect(url);
+  var noAck = !ack;
 
   /**
    * Send a message to all listeners for a specific id
@@ -69,7 +73,7 @@ module.exports = function () {
     }).then(function (ch) {
       ch.assertExchange(exchange, 'direct', { durable: true });
       return ch.assertQueue(queueName, { durable: true }).then(function (q) {
-        return ch.consume(queueName, fn, { noAck: true });
+        return ch.consume(queueName, fn, { noAck: noAck });
       });
     });
   }
