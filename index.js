@@ -1,8 +1,8 @@
 'use strict';
 
+require('promise.prototype.finally');
 var uuid = require('uuid');
 var amqp = require('amqplib');
-var retry = require('amqplib-retry');
 
 /**
  * TransactionUtility Factory
@@ -73,7 +73,17 @@ module.exports = function () {
     }).then(function (ch) {
       ch.assertExchange(exchange, 'direct', { durable: true });
       return ch.assertQueue(queueName, { durable: true }).then(function (q) {
-        return ch.consume(queueName, fn, { noAck: noAck });
+        ch.consume(queueName, function (msg) {
+          if (noAck) {
+            fn(msg);
+          } else {
+            Promise.resolve(fn(msg)).then(function (res) {
+              return ch.ack(msg);
+            }).catch(function (err) {
+              return ch.nack(msg);
+            });
+          }
+        }, { noAck: noAck });
       });
     });
   }

@@ -1,6 +1,6 @@
+require('promise.prototype.finally');
 const uuid = require('uuid');
 const amqp = require('amqplib');
-const retry = require('amqplib-retry');
 
 /**
  * TransactionUtility Factory
@@ -60,7 +60,17 @@ module.exports = ({ url: url = 'amqp://localhost', exchange: exchange = 'transac
       .then(ch => {
         ch.assertExchange(exchange, 'direct', { durable: true });
         return ch.assertQueue(queueName, { durable: true })
-          .then(q => ch.consume(queueName, fn, { noAck }));
+          .then(q => {
+            ch.consume(queueName, (msg) => {
+              if (noAck) {
+                fn(msg);
+              } else {
+                Promise.resolve(fn(msg))
+                  .then(res => ch.ack(msg))
+                  .catch(err => ch.nack(msg));
+              }
+            }, { noAck });
+          });
       });
   }
 
