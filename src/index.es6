@@ -1,4 +1,3 @@
-require('promise.prototype.finally');
 const uuid = require('uuid');
 const amqp = require('amqplib');
 

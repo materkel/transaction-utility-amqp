@@ -1,6 +1,5 @@
 'use strict';
 
-require('promise.prototype.finally');
 var uuid = require('uuid');
 var amqp = require('amqplib');
 

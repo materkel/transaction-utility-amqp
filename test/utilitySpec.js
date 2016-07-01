@@ -71,7 +71,7 @@ describe('Transaction Utility', () => {
       expect(res.action).to.be.equal('r');
       done();
     })
-    // listen for transaction outcome with id 'transaction2' on listener 'api2'
+    // listen for transaction outcome on listener 'api2'
     .then(res => {
       transactionUtility.listen('api2', transactionId);
     })
@@ -88,13 +88,12 @@ describe('Transaction Utility', () => {
       expect(res.action).to.be.equal('c');
       done();
     })
-    // listen for transaction outcome with id 'transaction3' on listener 'api3'
+    // listen for transaction outcome on listener 'api3'
     .then(res => transactionUtility.listen('api3', transactionId))
     .then(res => transactionUtility.commit(transactionId));
   });
 
   it('should reschedule a message after an Error', function(done) {
-    this.timeout(30000);
     const transactionId = transactionUtility.generateId();
     transactionUtility.listener('api4', (res) => {
       let initialResponse = res;
@@ -109,10 +108,8 @@ describe('Transaction Utility', () => {
         done();
       }
     })
-    // listen for transaction outcome with id 'transaction2' on listener 'api2'
-    .then(res => {
-      transactionUtility.listen('api4', transactionId);
-    })
+    // listen for transaction outcome on listener 'api2'
+    .then(res => transactionUtility.listen('api4', transactionId))
     .then(res => transactionUtility.rollback(transactionId));
   });
 });
